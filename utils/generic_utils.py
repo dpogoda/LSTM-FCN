@@ -1,3 +1,4 @@
+from utils.constants import TRAIN_FILES, TEST_FILES, MAX_SEQUENCE_LENGTH_LIST, NB_CLASSES_LIST
 import numpy as np
 import pandas as pd
 import os
@@ -5,8 +6,6 @@ import matplotlib as mpl
 import matplotlib.pylab as plt
 
 mpl.style.use('seaborn-paper')
-
-from utils.constants import TRAIN_FILES, TEST_FILES, MAX_SEQUENCE_LENGTH_LIST, NB_CLASSES_LIST
 
 
 def load_dataset_at(index, normalize_timeseries=False, verbose=True) -> (np.array, np.array):
@@ -29,19 +28,24 @@ def load_dataset_at(index, normalize_timeseries=False, verbose=True) -> (np.arra
         A tuple of shape (X_train, y_train, X_test, y_test, is_timeseries).
         For legacy reasons, is_timeseries is always True.
     """
-    assert index < len(TRAIN_FILES), "Index invalid. Could not load dataset at %d" % index
-    if verbose: print("Loading train / test dataset : ", TRAIN_FILES[index], TEST_FILES[index])
+    assert index < len(
+        TRAIN_FILES), "Index invalid. Could not load dataset at %d" % index
+    if verbose:
+        print("Loading train / test dataset : ",
+              TRAIN_FILES[index], TEST_FILES[index])
 
     if os.path.exists(TRAIN_FILES[index]):
-        df = pd.read_csv(TRAIN_FILES[index], header=None, encoding='latin-1')
+        df = pd.read_csv(TRAIN_FILES[index], sep="\t",
+                         header=None, encoding='latin-1')
 
     elif os.path.exists(TRAIN_FILES[index][1:]):
-        df = pd.read_csv(TRAIN_FILES[index][1:], header=None, encoding='latin-1')
+        df = pd.read_csv(TRAIN_FILES[index][1:],
+                         sep="\t", header=None, encoding='latin-1')
 
     else:
         raise FileNotFoundError('File %s not found!' % (TRAIN_FILES[index]))
 
-    is_timeseries = True # assume all input data is univariate time series
+    is_timeseries = True  # assume all input data is univariate time series
 
     # remove all columns which are completely empty
     df.dropna(axis=1, how='all', inplace=True)
@@ -62,7 +66,8 @@ def load_dataset_at(index, normalize_timeseries=False, verbose=True) -> (np.arra
     # extract labels Y and normalize to [0 - (MAX - 1)] range
     y_train = df[[0]].values
     nb_classes = len(np.unique(y_train))
-    y_train = (y_train - y_train.min()) / (y_train.max() - y_train.min()) * (nb_classes - 1)
+    y_train = (y_train - y_train.min()) / \
+        (y_train.max() - y_train.min()) * (nb_classes - 1)
 
     # drop labels column from train set X
     df.drop(df.columns[0], axis=1, inplace=True)
@@ -85,13 +90,16 @@ def load_dataset_at(index, normalize_timeseries=False, verbose=True) -> (np.arra
                 X_train_std = X_train.std(axis=-1, keepdims=True)
                 X_train = (X_train - X_train_mean) / (X_train_std + 1e-8)
 
-    if verbose: print("Finished loading train dataset..")
+    if verbose:
+        print("Finished loading train dataset..")
 
     if os.path.exists(TEST_FILES[index]):
-        df = pd.read_csv(TEST_FILES[index], header=None, encoding='latin-1')
+        df = pd.read_csv(TEST_FILES[index], header=None,
+                         encoding='latin-1', sep="\t")
 
     elif os.path.exists(TEST_FILES[index][1:]):
-        df = pd.read_csv(TEST_FILES[index][1:], header=None, encoding='latin-1')
+        df = pd.read_csv(TEST_FILES[index][1:],
+                         header=None, encoding='latin-1', sep="\t")
     else:
         raise FileNotFoundError('File %s not found!' % (TEST_FILES[index]))
 
@@ -114,7 +122,8 @@ def load_dataset_at(index, normalize_timeseries=False, verbose=True) -> (np.arra
     # extract labels Y and normalize to [0 - (MAX - 1)] range
     y_test = df[[0]].values
     nb_classes = len(np.unique(y_test))
-    y_test = (y_test - y_test.min()) / (y_test.max() - y_test.min()) * (nb_classes - 1)
+    y_test = (y_test - y_test.min()) / \
+        (y_test.max() - y_test.min()) * (nb_classes - 1)
 
     # drop labels column from train set X
     df.drop(df.columns[0], axis=1, inplace=True)
@@ -137,7 +146,8 @@ def load_dataset_at(index, normalize_timeseries=False, verbose=True) -> (np.arra
     if verbose:
         print("Finished loading test dataset..")
         print()
-        print("Number of train samples : ", X_train.shape[0], "Number of test samples : ", X_test.shape[0])
+        print("Number of train samples : ",
+              X_train.shape[0], "Number of test samples : ", X_test.shape[0])
         print("Number of classes : ", nb_classes)
         print("Sequence length : ", X_train.shape[-1])
 
@@ -202,8 +212,8 @@ def plot_dataset(dataset_id, seed=None, limit=None, cutoff=None,
 
     if plot_data is None:
         X_train, y_train, X_test, y_test, is_timeseries = load_dataset_at(
-                                                               dataset_id,
-                                                               normalize_timeseries=normalize_timeseries)
+            dataset_id,
+            normalize_timeseries=normalize_timeseries)
 
         if not is_timeseries:
             print("Can plot time series input data only!\n"
@@ -216,13 +226,15 @@ def plot_dataset(dataset_id, seed=None, limit=None, cutoff=None,
             if cutoff is None:
                 choice = cutoff_choice(dataset_id, sequence_length)
             else:
-                assert cutoff in ['pre', 'post'], 'Cutoff parameter value must be either "pre" or "post"'
+                assert cutoff in [
+                    'pre', 'post'], 'Cutoff parameter value must be either "pre" or "post"'
                 choice = cutoff
 
             if choice not in ['pre', 'post']:
                 return
             else:
-                X_train, X_test = X_test(X_train, X_test, choice, dataset_id, sequence_length)
+                X_train, X_test = X_test(
+                    X_train, X_test, choice, dataset_id, sequence_length)
 
         X_train_attention = None
         X_test_attention = None
@@ -261,7 +273,8 @@ def plot_dataset(dataset_id, seed=None, limit=None, cutoff=None,
         train_size = min([train_size // NB_CLASSES_LIST[dataset_id], size])
 
         for i in range(len(classwise_train_list)):
-            classwise_train_idx = np.random.randint(0, len(classwise_train_list[i][0]), size=train_size)
+            classwise_train_idx = np.random.randint(
+                0, len(classwise_train_list[i][0]), size=train_size)
             classwise_train_list[i] = classwise_train_list[i][0][classwise_train_idx]
 
         classwise_X_train_list = []
@@ -277,15 +290,18 @@ def plot_dataset(dataset_id, seed=None, limit=None, cutoff=None,
                 classwise_X_attn = classwise_X_attn.transpose((1, 0))
                 classwise_X_train_attention_list.append(classwise_X_attn)
 
-        classwise_X_train_list = [np.asarray(x) for x in classwise_X_train_list]
-        classwise_X_train_attention_list = [np.asarray(x) for x in classwise_X_train_attention_list]
+        classwise_X_train_list = [np.asarray(x)
+                                  for x in classwise_X_train_list]
+        classwise_X_train_attention_list = [np.asarray(
+            x) for x in classwise_X_train_attention_list]
 
         # classwise x train
         X_train = np.concatenate(classwise_X_train_list, axis=-1)
 
         # classwise x train attention
         if X_train_attention is not None:
-            X_train_attention = np.concatenate(classwise_X_train_attention_list, axis=-1)
+            X_train_attention = np.concatenate(
+                classwise_X_train_attention_list, axis=-1)
 
     if not plot_classwise:
         test_idx = np.random.randint(0, X_test.shape[0], size=test_size)
@@ -306,7 +322,8 @@ def plot_dataset(dataset_id, seed=None, limit=None, cutoff=None,
         test_size = min([test_size // NB_CLASSES_LIST[dataset_id], size])
 
         for i in range(len(classwise_test_list)):
-            classwise_test_idx = np.random.randint(0, len(classwise_test_list[i][0]), size=test_size)
+            classwise_test_idx = np.random.randint(
+                0, len(classwise_test_list[i][0]), size=test_size)
             classwise_test_list[i] = classwise_test_list[i][0][classwise_test_idx]
 
         classwise_X_test_list = []
@@ -323,14 +340,16 @@ def plot_dataset(dataset_id, seed=None, limit=None, cutoff=None,
                 classwise_X_test_attention_list.append(classwise_X_attn)
 
         classwise_X_test_list = [np.asarray(x) for x in classwise_X_test_list]
-        classwise_X_test_attention_list = [np.asarray(x) for x in classwise_X_test_attention_list]
+        classwise_X_test_attention_list = [np.asarray(
+            x) for x in classwise_X_test_attention_list]
 
         # classwise x test
         X_test = np.concatenate(classwise_X_test_list, axis=-1)
 
         # classwise x test attention
         if X_test_attention is not None:
-            X_test_attention = np.concatenate(classwise_X_test_attention_list, axis=-1)
+            X_test_attention = np.concatenate(
+                classwise_X_test_attention_list, axis=-1)
 
     print('X_train shape : ', X_train.shape)
     print('X_test shape : ', X_test.shape)
@@ -352,7 +371,7 @@ def plot_dataset(dataset_id, seed=None, limit=None, cutoff=None,
         cols = 2
 
     fig, axs = plt.subplots(rows, cols, squeeze=False,
-                           tight_layout=True, figsize=(8, 6))
+                            tight_layout=True, figsize=(8, 6))
     axs[0][0].set_title('Train dataset', size=16)
     axs[0][0].set_xlabel('timestep')
     axs[0][0].set_ylabel('value')
@@ -368,10 +387,12 @@ def plot_dataset(dataset_id, seed=None, limit=None, cutoff=None,
                  ax=axs[0][1],)
 
     if plot_data is not None and X_train_attention is not None:
-        columns = ['Class %d' % (i + 1) for i in range(X_train_attention.shape[1])]
+        columns = ['Class %d' % (i + 1)
+                   for i in range(X_train_attention.shape[1])]
         train_attention_df = pd.DataFrame(X_train_attention,
-                            index=range(X_train_attention.shape[0]),
-                            columns=columns)
+                                          index=range(
+                                              X_train_attention.shape[0]),
+                                          columns=columns)
 
         axs[1][0].set_title('Train %s Sequence' % (type), size=16)
         axs[1][0].set_xlabel('timestep')
@@ -381,7 +402,8 @@ def plot_dataset(dataset_id, seed=None, limit=None, cutoff=None,
                                 ax=axs[1][0])
 
     if plot_data is not None and X_test_attention is not None:
-        columns = ['Class %d' % (i + 1) for i in range(X_test_attention.shape[1])]
+        columns = ['Class %d' % (i + 1)
+                   for i in range(X_test_attention.shape[1])]
         test_df = pd.DataFrame(X_test_attention,
                                index=range(X_test_attention.shape[0]),
                                columns=columns)
