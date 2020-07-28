@@ -4,7 +4,7 @@ import traceback
 
 from tensorflow.keras import backend as K
 from tensorflow.keras.layers import Conv1D, BatchNormalization, GlobalAveragePooling1D, Permute, Dropout, Flatten
-from tensorflow.keras.layers import Input, PReLU, Dense, LSTM, CuDNNLSTM, concatenate, Activation, GRU, SimpleRNN
+from tensorflow.keras.layers import Input, PReLU, Dense, LSTM, concatenate, Activation, GRU, SimpleRNN
 from tensorflow.keras.models import Model
 from utils.constants import MAX_SEQUENCE_LENGTH_LIST, NB_CLASSES_LIST
 from utils.generic_utils import load_dataset_at
@@ -229,7 +229,7 @@ def generate_ndlstmfcn(MAX_SEQUENCE_LENGTH, NB_CLASS, NUM_CELLS=8):
     ip = Input(shape=(1, MAX_SEQUENCE_LENGTH))
 
     x = Permute((2, 1))(ip)
-    x = CuDNNLSTM(NUM_CELLS)(x)
+    x = LSTM(NUM_CELLS)(x)
     x = Dropout(0.8)(x)
 
     y = Permute((2, 1))(ip)

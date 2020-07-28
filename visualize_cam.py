@@ -1,5 +1,5 @@
 from tensorflow.keras.models import Model
-from tensorflow.keras.layers import Input, PReLU, Dense, LSTM, CuDNNLSTM, concatenate, Activation
+from tensorflow.keras.layers import Input, PReLU, Dense, LSTM, concatenate, Activation
 from tensorflow.keras.layers import Conv1D, BatchNormalization, GlobalAveragePooling1D, Permute, Dropout
 
 from utils.constants import MAX_SEQUENCE_LENGTH_LIST, NB_CLASSES_LIST, TRAIN_FILES
