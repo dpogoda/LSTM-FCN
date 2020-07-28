@@ -1,15 +1,15 @@
 from __future__ import absolute_import
 import warnings
 
-from keras import backend as K
-from keras import activations
-from keras import initializers
-from keras import regularizers
-from keras import constraints
-from keras.engine import Layer
-from keras.engine import InputSpec
-from keras.legacy import interfaces
-from keras.layers import RNN
+from tensorflow.keras import backend as K
+from tensorflow.keras import activations
+from tensorflow.keras import initializers
+from tensorflow.keras import regularizers
+from tensorflow.keras import constraints
+from tensorflow.keras.engine import Layer
+from tensorflow.keras.engine import InputSpec
+from tensorflow.keras.legacy import interfaces
+from tensorflow.keras.layers import RNN
 
 
 def _time_distributed_dense(x, w, b=None, dropout=None,

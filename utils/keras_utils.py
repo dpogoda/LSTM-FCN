@@ -11,14 +11,14 @@ from skimage.transform import resize
 
 import warnings
 
-from keras.models import Model
-from keras.layers import Permute
-from keras.optimizers import Adam
-from keras.utils import to_categorical
-from keras.preprocessing.sequence import pad_sequences
-from keras.callbacks import ModelCheckpoint, ReduceLROnPlateau, LearningRateScheduler
-from keras.wrappers.scikit_learn import KerasClassifier
-from keras import backend as K
+from tensorflow.keras.models import Model
+from tensorflow.keras.layers import Permute
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.utils import to_categorical
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+from tensorflow.keras.callbacks import ModelCheckpoint, ReduceLROnPlateau, LearningRateScheduler
+from tensorflow.keras.wrappers.scikit_learn import KerasClassifier
+from tensorflow.keras import backend as K
 
 from utils.generic_utils import load_dataset_at, calculate_dataset_metrics, cutoff_choice, \
     cutoff_sequence, plot_dataset
