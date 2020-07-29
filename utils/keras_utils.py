@@ -125,6 +125,8 @@ def train_model(model: Model, dataset_id, dataset_prefix, epochs=50, batch_size=
         X_test = X_test[:val_subset]
         y_test = y_test[:val_subset]
 
+    class_weight = {i : class_weight[i] for i in range(len(class_weight))}
+
     model.fit(X_train, y_train, batch_size=batch_size, epochs=epochs, callbacks=callback_list,
               class_weight=class_weight, verbose=2, validation_data=(X_test, y_test))
 
@@ -187,7 +189,8 @@ def evaluate_model(model: Model, dataset_id, dataset_prefix, batch_size=128, tes
 
     print("\nEvaluating : ")
     loss, accuracy = model.evaluate(X_test, y_test, batch_size=batch_size)
-    print()
+    with open('/content/ucr/My Drive/Datasets/Time Series Classification/lstm/accuracy', 'a+') as a_file:
+        a_file.write(dataset_prefix + " " + str(accuracy) + "\n")
     print("Final Accuracy : ", accuracy)
 
     return accuracy

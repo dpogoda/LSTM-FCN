@@ -213,9 +213,8 @@ if __name__ == "__main__":
                    ]
 
     print("Num datasets : ", len(dataset_map))
-    print()
 
-    base_log_name = '%s_%d_cells_new_datasets.csv'
+    base_log_name = '/content/ucr/My Drive/Datasets/Time Series Classification/lstm/%s_%d_cells_new_datasets.csv'
     base_weights_dir = '%s_%d_cells_weights/'
 
     MODELS = [
@@ -243,6 +242,16 @@ if __name__ == "__main__":
                 file.close()
 
             for dname, did in dataset_map:
+
+                # check if we already have the accuracy for dname
+                conti = False
+                with open('/content/ucr/My Drive/Datasets/Time Series Classification/lstm/accuracy', 'r') as a_file:
+                    for line in a_file:
+                        le_name = line.split(' ')[0]
+                        if le_name == (base_weights_dir + dname) % (MODEL_NAME, cell):
+                            conti = True
+                if conti == True:
+                    continue
 
                 MAX_SEQUENCE_LENGTH = MAX_SEQUENCE_LENGTH_LIST[did]
                 NB_CLASS = NB_CLASSES_LIST[did]
