@@ -223,7 +223,7 @@ if __name__ == "__main__":
     ]
 
     # Number of cells
-    CELLS = [8, 64, 128]
+    CELLS = [128]
 
     # Normalization scheme
     # Normalize = False means no normalization will be done
